@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="8.0.0" />
+      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.101.38" />
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
+      <PackageReference Include="IdentityServer4" Version="2.5.0" />
+      <PackageReference Include="IdentityServer4.Storage" Version="2.5.0" />
+    </ItemGroup>
+
+</Project>

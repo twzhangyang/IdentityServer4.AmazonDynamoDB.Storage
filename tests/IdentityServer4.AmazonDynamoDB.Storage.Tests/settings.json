@@ -1,0 +1,9 @@
+{
+  "AWS": {
+    "Region": "[region]"
+  },
+  "DynamoDB": {
+    "Environment": "local",
+    "ServiceURL": "http://localhost:8000"
+  }
+}
