@@ -21,13 +21,12 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
             var configurationRoot = configurationBuilder.Build();
             services.AddSingleton((IConfiguration) configurationRoot);
             
-            services.Configure<DynamoDBOptions>(configurationRoot.GetSection("DynamoDB"));
-            services.AddOperationalDynamoDBStore(configurationRoot,
-                options =>
-                {
-                    var section = configurationRoot.GetSection("DynamoDB");
-                    section.Bind(options);
-                });
+            var dynamoDBOption = new DynamoDBOptions();
+            var section = configurationRoot.GetSection("DynamoDB");
+            section.Bind(dynamoDBOption);
+            
+            services.Configure<DynamoDBOptions>(section);
+            services.AddOperationalDynamoDBStore(configurationRoot, dynamoDBOption);
 
             ServiceProvider = services.BuildServiceProvider();
             PersistedGrantStore = ServiceProvider.GetService<IPersistedGrantStore>();

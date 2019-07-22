@@ -26,10 +26,9 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Stores
 
         public async Task<PersistedGrant> GetAsync(string key)
         {
-            var persistedGrant = await _dynamoDbContext.QueryAsync<PersistedGrantEntity>(key)
-                .GetRemainingAsync();
+            var persistedGrant = await _dynamoDbContext.LoadAsync<PersistedGrantEntity>(key);
 
-            return persistedGrant.FirstOrDefault()?.ToModel();
+            return persistedGrant.ToModel();
         }
 
         public async Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
@@ -56,13 +55,8 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Stores
 
         public async Task RemoveAsync(string key)
         {
-            var persistedGrant = await _dynamoDbContext.QueryAsync<PersistedGrantEntity>(key)
-                .GetRemainingAsync();
-
-            if (persistedGrant.Any())
-            {
-                await _dynamoDbContext.DeleteAsync(persistedGrant.First());
-            }
+            var persistedGrant = await _dynamoDbContext.LoadAsync<PersistedGrantEntity>(key);
+            await _dynamoDbContext.DeleteAsync(persistedGrant);
         }
 
         public async Task RemoveAllAsync(string subjectId, string clientId)

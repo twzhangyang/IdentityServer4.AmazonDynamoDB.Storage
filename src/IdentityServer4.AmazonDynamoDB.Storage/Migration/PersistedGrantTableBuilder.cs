@@ -18,7 +18,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
         public async Task CreateTable(DynamoDBOptions options)
         {
             var tableName = options.PersistedGrantTableName;
-            var tables = await _amazonDynamoDbClient.ListTablesAsync(tableName);
+            var tables = await _amazonDynamoDbClient.ListTablesAsync();
 
             if (!tables.TableNames.Contains(tableName))
             {
@@ -31,11 +31,6 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
                         {
                             AttributeName = "Key",
                             AttributeType = "S"
-                        },
-                        new AttributeDefinition
-                        {
-                            AttributeName = "SubjectId",
-                            AttributeType = "S"
                         }
                     },
                     KeySchema = new List<KeySchemaElement>
@@ -44,11 +39,6 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
                         {
                             AttributeName = "Key",
                             KeyType = "HASH"
-                        },
-                        new KeySchemaElement
-                        {
-                            AttributeName = "SubjectId",
-                            KeyType = "RANGE"
                         }
                     },
                     ProvisionedThroughput = new ProvisionedThroughput

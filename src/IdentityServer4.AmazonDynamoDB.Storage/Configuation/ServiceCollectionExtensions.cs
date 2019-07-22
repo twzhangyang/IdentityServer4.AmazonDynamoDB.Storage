@@ -15,26 +15,27 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Configuration
         public static IIdentityServerBuilder AddOperationalDynamoDBStore(
             this IIdentityServerBuilder builder,
             IConfiguration configuration,
-            Action<DynamoDBOptions> actionConfigure = null)
+            string dynamoDBOptionKey)
         {
-            builder.Services.AddOperationalDynamoDBStore(configuration, actionConfigure);
+            var dynamoDBOption = new DynamoDBOptions();
+            var section = configuration.GetSection(dynamoDBOptionKey);
+            section.Bind(dynamoDBOption);
+
+            builder.Services.Configure<DynamoDBOptions>(section);
+            builder.Services.AddOperationalDynamoDBStore(configuration, dynamoDBOption);
 
             return builder;
         }
         
         public static IServiceCollection AddOperationalDynamoDBStore(this IServiceCollection services,
-            IConfiguration configuration,
-            Action<DynamoDBOptions> actionConfigure = null)
+            IConfiguration configuration, DynamoDBOptions options)
         {
-            var dynamoDBOptions = new DynamoDBOptions();
-            actionConfigure?.Invoke(dynamoDBOptions);
-
             var awsOptions = configuration.GetAWSOptions();
-            awsOptions.DefaultClientConfig.ServiceURL = dynamoDBOptions.ServiceURL;
+            awsOptions.DefaultClientConfig.ServiceURL = options.ServiceURL;
 
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonDynamoDB>(awsOptions);
-            services.AddSingleton(x => new DynamoDBContextConfig {TableNamePrefix = dynamoDBOptions.TablePrefix});
+            services.AddSingleton(x => new DynamoDBContextConfig {TableNamePrefix = options.TablePrefix});
             services.AddTransient(x =>
             {
                 var client = x.GetService<IAmazonDynamoDB>();

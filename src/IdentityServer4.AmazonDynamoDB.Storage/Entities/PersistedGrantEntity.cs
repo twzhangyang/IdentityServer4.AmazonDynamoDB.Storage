@@ -12,7 +12,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Entities
         [DynamoDBProperty]
         public string Type { get; set; }
 
-        [DynamoDBRangeKey]
+        [DynamoDBProperty]
         public string SubjectId { get; set; }
 
         [DynamoDBProperty]

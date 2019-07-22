@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using IdentityServer4.AmazonDynamoDB.Storage.Migration;
 using IdentityServer4.AmazonDynamoDB.Storage.Options;
+using IdentityServer4.AmazonDynamoDB.Storage.Tests.TestOrder;
 using IdentityServer4.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -10,9 +11,10 @@ using Xunit;
 
 namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
 {
+    [Collection("persisted grant")]
     public class PersistedGrantStoreTests : TestBase
     {
-        [Fact]
+        [Fact, TestPriority(1)]
         public async void ShouldCreateTable()
         {
             var tableBuilder = ServiceProvider.GetService<PersistedGrantTableBuilder>();
@@ -21,7 +23,8 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
             await tableBuilder.CreateTable(options.Value);
         }
 
-        [Fact]
+        [Fact, TestPriority(2)]
+
         public async void ShouldStoreToken()
         {
             //Arrange
@@ -40,7 +43,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
             await PersistedGrantStore.StoreAsync(token);
         }
         
-        [Fact]
+        [Fact, TestPriority(3)]
         public async void ShouldGetStoreToken()
         {
             //Arrange
@@ -53,7 +56,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
             token.Should().NotBeNull();
         }
         
-        [Fact]
+        [Fact, TestPriority(4)]
         public async void GetAllBySubjectId()
         {
             //Arrange
