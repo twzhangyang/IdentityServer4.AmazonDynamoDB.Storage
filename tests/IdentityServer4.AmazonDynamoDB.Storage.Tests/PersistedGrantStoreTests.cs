@@ -12,6 +12,7 @@ using Xunit;
 namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
 {
     [Collection("persisted grant")]
+    [TestCaseOrderer("IdentityServer4.AmazonDynamoDB.Storage.Tests.TestOrder.PriorityOrderer", "IdentityServer4.AmazonDynamoDB.Storage.Tests")]
     public class PersistedGrantStoreTests : TestBase
     {
         [Fact, TestPriority(1)]
@@ -69,7 +70,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
             tokens.Should().HaveCountGreaterThan(0);
         }
         
-        [Fact]
+        [Fact, TestPriority(5)]
         public async void ShouldRemoveByKey()
         {
             //Arrange

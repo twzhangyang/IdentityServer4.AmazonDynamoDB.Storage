@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Samples.ResourceOwnerClient.Server;
+using IdentityServer4.AmazonDynamoDB.Storage.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,7 +32,7 @@ namespace IdentityServer4.Samples.ResourceOwnerClient.Server
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             var builder = services.AddIdentityServer()
-//                .AddOperationalDynamoDBStore(Configuration,"DynamoDB")
+                .AddOperationalDynamoDBStore(Configuration,"DynamoDB")
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients())
