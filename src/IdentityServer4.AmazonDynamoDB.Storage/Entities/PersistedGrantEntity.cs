@@ -12,13 +12,13 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Entities
         [DynamoDBProperty]
         public string Type { get; set; }
 
-        [DynamoDBProperty]
+        [DynamoDBGlobalSecondaryIndexHashKey]
         public string SubjectId { get; set; }
 
         [DynamoDBProperty]
         public string ClientId { get; set; }
 
-        [DynamoDBProperty]
+        [DynamoDBGlobalSecondaryIndexRangeKey]
         public DateTime CreationTime { get; set; }
      
         [DynamoDBProperty]

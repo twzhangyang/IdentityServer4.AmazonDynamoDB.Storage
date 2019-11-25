@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using IdentityServer4.AmazonDynamoDB.Storage.Entities;
 using IdentityServer4.AmazonDynamoDB.Storage.Mappers;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 
@@ -33,24 +36,11 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Stores
 
         public async Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
         {
-            var result = new List<PersistedGrant>();
-            var conditions = new List<ScanCondition>
-            {
-                new ScanCondition("SubjectId", ScanOperator.Equal, subjectId),
-            };
+           var  result = await _dynamoDbContext.QueryAsync<PersistedGrant>(subjectId, 
+                   new DynamoDBOperationConfig {IndexName = "SubjectIdAndCreationTimeIndex"})
+                .GetRemainingAsync();
 
-            var batch = _dynamoDbContext.ScanAsync<PersistedGrantEntity>(conditions);
-            while (!batch.IsDone)
-            {
-                var dataset = await batch.GetNextSetAsync();
-
-                if (dataset.Any())
-                {
-                    result.AddRange(dataset.Select(x => x.ToModel()));
-                }
-            }
-
-            return result;
+           return result;
         }
 
         public async Task RemoveAsync(string key)
@@ -61,43 +51,22 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Stores
 
         public async Task RemoveAllAsync(string subjectId, string clientId)
         {
-            var conditions = new List<ScanCondition>
-            {
-                new ScanCondition("SubjectId", ScanOperator.Equal, subjectId),
-                new ScanCondition("ClientId", ScanOperator.Equal, clientId)
-            };
+            var results = await GetAllAsync(subjectId);
 
-            var batch = _dynamoDbContext.ScanAsync<PersistedGrantEntity>(conditions);
-            while (!batch.IsDone)
+            if (results.IsNullOrEmpty())
             {
-                var dataset = await batch.GetNextSetAsync();
+                throw new NoneGrantTypeRecordFoundException();
+            }
 
-                if (dataset.Any())
-                {
-                    dataset.ForEach(async item => await _dynamoDbContext.DeleteAsync(item));
-                }
+            foreach (var result in results)
+            {
+                await RemoveAsync(result.Key);
             }
         }
 
         public async Task RemoveAllAsync(string subjectId, string clientId, string type)
         {
-            var conditions = new List<ScanCondition>
-            {
-                new ScanCondition("SubjectId", ScanOperator.Equal, subjectId),
-                new ScanCondition("ClientId", ScanOperator.Equal, clientId),
-                new ScanCondition("Type", ScanOperator.Equal, type)
-            };
-
-            var batch = _dynamoDbContext.ScanAsync<PersistedGrantEntity>(conditions);
-            while (!batch.IsDone)
-            {
-                var dataset = await batch.GetNextSetAsync();
-
-                if (dataset.Any())
-                {
-                    dataset.ForEach(async item => await _dynamoDbContext.DeleteAsync(item));
-                }
-            }
+            await RemoveAllAsync(subjectId, clientId);
         }
     }
 }

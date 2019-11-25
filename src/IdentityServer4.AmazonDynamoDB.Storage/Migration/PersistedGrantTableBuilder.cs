@@ -14,7 +14,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
         {
             _amazonDynamoDbClient = amazonDynamoDbClient;
         }
-        
+
         public async Task CreateTable(DynamoDBOptions options)
         {
             var tableName = options.PersistedGrantTableName;
@@ -31,6 +31,16 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
                         {
                             AttributeName = "Key",
                             AttributeType = "S"
+                        },
+                        new AttributeDefinition
+                        {
+                            AttributeName = "SubjectId",
+                            AttributeType = "S"
+                        },
+                        new AttributeDefinition
+                        {
+                            AttributeName = "CreationTime",
+                            AttributeType = "S"
                         }
                     },
                     KeySchema = new List<KeySchemaElement>
@@ -41,10 +51,39 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
                             KeyType = "HASH"
                         }
                     },
+                    GlobalSecondaryIndexes = new List<GlobalSecondaryIndex>()
+                    {
+                        new GlobalSecondaryIndex()
+                        {
+                            IndexName = "SubjectIdAndCreationTimeIndex",
+                            KeySchema = new List<KeySchemaElement>
+                            {
+                                new KeySchemaElement
+                                {
+                                    AttributeName = "SubjectId",
+                                    KeyType = "HASH"
+                                },
+                                new KeySchemaElement
+                                {
+                                    AttributeName = "CreationTime",
+                                    KeyType = "RANGE"
+                                }
+                            },
+                            Projection = new Projection
+                            {
+                                ProjectionType = ProjectionType.KEYS_ONLY
+                            },
+                            ProvisionedThroughput = new ProvisionedThroughput
+                            {
+                                ReadCapacityUnits = 5,
+                                WriteCapacityUnits = 5
+                            }
+                        }
+                    },
                     ProvisionedThroughput = new ProvisionedThroughput
                     {
-                        ReadCapacityUnits = 2,
-                        WriteCapacityUnits = 2
+                        ReadCapacityUnits = 10,
+                        WriteCapacityUnits = 10
                     }
                 };
 

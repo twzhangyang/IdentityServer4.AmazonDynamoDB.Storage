@@ -12,6 +12,12 @@ docker run -p 8000:8000 dwmkerr/dynamodb -sharedDb
 http://localhost:8000/shell
 ```
 
+
+### Query table in aws cli
+```
+aws2 dynamodb list-tables --endpoint-url http://localhost:8000
+```
+
 ### Add config in appsettings.json
 ```
   "AWS": {
