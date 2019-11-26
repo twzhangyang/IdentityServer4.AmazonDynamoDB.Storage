@@ -41,6 +41,11 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
                         {
                             AttributeName = "CreationTime",
                             AttributeType = "S"
+                        },
+                        new AttributeDefinition
+                        {
+                            AttributeName = "TTL",
+                            AttributeType = "N"
                         }
                     },
                     KeySchema = new List<KeySchemaElement>
@@ -84,7 +89,7 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Migration
                     {
                         ReadCapacityUnits = 10,
                         WriteCapacityUnits = 10
-                    }
+                    },
                 };
 
                 await _amazonDynamoDbClient.CreateTableAsync(createRequest);

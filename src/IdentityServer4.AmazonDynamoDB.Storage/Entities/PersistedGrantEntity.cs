@@ -26,5 +26,8 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Entities
 
         [DynamoDBProperty]
         public string Data { get; set; }
+        
+        [DynamoDBProperty]
+        public long TTL { get; set; }
     }
 }

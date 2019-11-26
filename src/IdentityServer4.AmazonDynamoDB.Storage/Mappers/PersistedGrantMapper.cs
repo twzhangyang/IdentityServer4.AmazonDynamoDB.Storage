@@ -1,3 +1,4 @@
+using Amazon.Util;
 using AutoMapper;
 using IdentityServer4.AmazonDynamoDB.Storage.Entities;
 using IdentityServer4.Models;
@@ -21,7 +22,13 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Mappers
 
         public static PersistedGrantEntity ToEntity(this PersistedGrant model)
         {
-            return model == null ? null : Mapper.Map<PersistedGrantEntity>(model);
+            var entity = model == null ? null : Mapper.Map<PersistedGrantEntity>(model);
+            if (entity != null)
+            {
+                entity.TTL = AWSSDKUtils.ConvertToUnixEpochSeconds(model.Expiration.Value);
+            }
+
+            return entity;
         }
 
         public static void UpdateEntity(this PersistedGrant model, PersistedGrantEntity entity)

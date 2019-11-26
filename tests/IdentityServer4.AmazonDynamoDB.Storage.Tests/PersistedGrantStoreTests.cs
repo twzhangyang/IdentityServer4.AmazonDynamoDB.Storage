@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Amazon.Util;
 using FluentAssertions;
 using IdentityServer4.AmazonDynamoDB.Storage.Migration;
 using IdentityServer4.AmazonDynamoDB.Storage.Options;
@@ -29,7 +30,6 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
         public async void ShouldStoreToken()
         {
             //Arrange
-
             for (int i = 0; i < 10; i++)
             {
                 var token = new PersistedGrant
@@ -37,10 +37,10 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
                     Key = "key" + i,
                     ClientId = "clientId" + i,
                     CreationTime = DateTime.Now,
-                    Expiration = DateTime.Now,
+                    Expiration = DateTime.Now.AddDays(1),
                     SubjectId = "subjectId" + i,
                     Data = "data" + i,
-                    Type = "type" + i
+                    Type = "type" + i,
                 };
 
                 await PersistedGrantStore.StoreAsync(token);
@@ -91,6 +91,15 @@ namespace IdentityServer4.AmazonDynamoDB.Storage.Tests
 
             //Act
             await PersistedGrantStore.RemoveAllAsync(subjectId, string.Empty);
+        }
+        
+        [Fact]
+        public void Test()
+        {
+            var ttl = "1574822917";
+            var date = AWSSDKUtils.ConvertFromUnixEpochSeconds(int.Parse(ttl)).ToUniversalTime();
+
+            date.Should().Equals(DateTime.Parse("2019-11-27T02:48:37.172Z"));
         }
     }
 }
